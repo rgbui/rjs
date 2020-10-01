@@ -4,7 +4,6 @@
 namespace Ve.Lang.Razor {
 
     export class RazorTemplate {
-
         static escape(code: string) {
             return code.replace(/@(?![@])/g, "@@");
         }
@@ -35,7 +34,7 @@ namespace Ve.Lang.Razor {
                  return innerFun.apply(this,args);
             }`;
             try {
-                var gl = typeof window == 'undefined' ? global : window;
+                var gl = typeof window == 'undefined' ? globalThis : window;
                 var fun = (gl as any).eval(`(${funCode})`);
                 return fun.apply(obj, [ViewBag, ...maps.map(x => x.value)])
             }

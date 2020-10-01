@@ -113,75 +113,7 @@ namespace Ve.Lang {
             return json;
         }
         get flag() {
-            var cmap: Record<string, any> = {
-                '《=': "<=",
-                '》=': ">=",
-                '！=': "!=",
-                '-》': "->",
-                '、': "/",
-                '！': "!",
-                "？": "?",
-                "：": ":",
-                "、=": "/=",
-                "。。。": "...",
-                "？？": "??",
-                "？。": "?.",
-                "。。": "..",
-                "《": "<",
-                "》": ">",
-                "（": "(",
-                "【": "]",
-                "）": ")",
-                "】": "]",
-                "，": ",",
-                "；": ";",
-                "。": ".",
-            };
-            var self = this;
-            var gv = () => {
-                if (typeof cmap[self.value] == 'string') return cmap[self.value];
-                return self.value;
-            }
-            if (this.name == 'operators') {
-                return gv();
-            }
-            else if (this.name == 'keywords') {
-                if (['any', 'Any', 'bool', 'Bool', 'number', 'Number', 'string', 'String', 'double', 'Double', 'Int', 'int',
-                    'Object', 'Array', 'Date'].find(x => x == this.value) ? true : false) return 'type';
-                return gv();
-            }
-            else if (this.name == 'delimiter') {
-                return gv();
-            }
-            else if (this.name.startsWith('comment')) {
-                return 'comment';
-            }
-            else if (this.name.startsWith('string')) {
-                if (this.name == 'string.single.open' || this.name == 'string.double.open') return '"';
-                else if (this.name == 'string.single.close' || this.name == 'string.double.close') return '\'';
-                else if (this.name == 'string.escape') return 'escape';
-                else if (this.name == 'string.variable') return 'variable';
-                else if (this.name == 'string.template.open') return '@{'
-                else if (this.name == 'string.template.close') return '}'
-                return 'string';
-            }
-            else if (this.name.startsWith('number')) {
-                return 'number';
-            }
-            else if (this.name.startsWith('white')) {
-                return 'space';
-            }
-            else if (this.name == 'line') {
-                return 'line'
-            }
-            else if (this.name == 'bracket.open' || this.name == 'bracket.close') {
-                return gv();
-            }
-            else if (this.name.startsWith('generic')) {
-                if (this.name == 'generic.type') return 'word'
-                else return gv();
-            }
-            else if (this.name == 'word') return this.name;
+            return '';
         }
         get index() {
             if (this.parent) {

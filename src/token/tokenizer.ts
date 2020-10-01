@@ -81,7 +81,7 @@ namespace Ve.Lang {
                 if (mode.nextTurn && mode.nextTurn.startsWith('@')) {
                     this.contextMode = this.syntax[mode.nextTurn.replace('@', '')];
                     if (!this.contextMode) {
-                        this.emit('error', new Error(`没有找到转向处理"${mode.nextTurn}"`), { col: token.pos, row: token.row }, token);
+                        this.emit('error', new Error(`not found nextTurn "${mode.nextTurn}"`), { col: token.pos, row: token.row }, token);
                     }
                     else { this.matchMode(); return true; }
                 }
@@ -89,7 +89,7 @@ namespace Ve.Lang {
                     if (this.contextToken.parent)
                         this.contextToken = this.contextToken.parent as any;
                     else {
-                        this.emit('error', new Error(`没有找到字符"${token.value}"的启始字符`),
+                        this.emit('error', new Error(`not found "${token.value}" starting character`),
                             { col: token.pos, row: token.row }, token);
                     }
                 }

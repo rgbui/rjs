@@ -63,7 +63,7 @@ namespace Ve.Lang.Razor {
                 push: true,
                 next: '@root',
                 action(contextToken: Token) {
-                    if (!['if', 'elseif'].includes(contextToken.name)) return {
+                    if (!(['if', 'elseif'].findIndex(x => x == contextToken.name) > -1)) return {
                         nextTurn: '@root'
                     }
                 }

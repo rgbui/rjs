@@ -3,7 +3,7 @@
 ///<reference path='razor/template.ts'/>
 
 if (typeof module != 'undefined' && module.exports) {
-    module.exports = Ve;
+    module.exports = Ve.Lang.Razor.RazorTemplate;
 }
 interface Window {
     RJS: Ve.Lang.Razor.RazorTemplate
