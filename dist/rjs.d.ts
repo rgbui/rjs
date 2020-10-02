@@ -87,13 +87,13 @@ declare namespace Ve.Lang.Util {
     }
     var _: {
         remove<T>(list: T[], predict: T | ((t: T, index?: number, thisArray?: T[]) => boolean)): void;
-        removeAll<T_1>(list: T_1[], predict: T_1 | ((t: T_1, index?: number, thisArray?: T_1[]) => boolean)): void;
-        each<T_2>(list: T_2[], predict: (t: T_2, index?: number, thisArray?: T_2[]) => boolean): void;
-        addRange<T_3>(list: T_3[], newArray: T_3[]): void;
-        find<T_4>(list: T_4[], predict: (t: T_4, index?: number, thisArray?: T_4[]) => boolean): T_4;
-        findIndex<T_5>(list: T_5[], predict: T_5 | ((t: T_5, index?: number, thisArray?: T_5[]) => boolean)): number;
-        exists<T_6>(list: T_6[], predict: T_6 | ((t: T_6, index?: number, thisArray?: T_6[]) => boolean)): boolean;
-        treeEach<T_7>(list: T_7[], treeChildName: string, fn: (item: T_7, deep?: number, index?: number, sort?: number, parent?: any, arr?: any[]) => void | {
+        removeAll<T>(list: T[], predict: T | ((t: T, index?: number, thisArray?: T[]) => boolean)): void;
+        each<T>(list: T[], predict: (t: T, index?: number, thisArray?: T[]) => boolean): void;
+        addRange<T>(list: T[], newArray: T[]): void;
+        find<T>(list: T[], predict: (t: T, index?: number, thisArray?: T[]) => boolean): T;
+        findIndex<T>(list: T[], predict: T | ((t: T, index?: number, thisArray?: T[]) => boolean)): number;
+        exists<T>(list: T[], predict: T | ((t: T, index?: number, thisArray?: T[]) => boolean)): boolean;
+        treeEach<T>(list: T[], treeChildName: string, fn: (item: T, deep?: number, index?: number, sort?: number, parent?: any, arr?: any[]) => void | {
             break?: boolean;
             continue?: boolean;
             returns?: any;
@@ -152,7 +152,7 @@ declare namespace Ve.Lang {
         closest(predict: (t: Token) => boolean, considerSelf?: boolean): Token;
         parents(predict: (t: Token) => boolean, tillPredict?: (t: Token) => boolean): List<Token>;
         get(): Record<string, any>;
-        readonly flag: any;
+        readonly flag: string;
         readonly index: number;
     }
 }
@@ -174,13 +174,13 @@ declare namespace Ve.Lang {
         protected load(syntax?: LangSyntax): void;
         protected createToken(): Token;
         parse(code: string): Token;
-        private matchMode;
-        private match;
-        private matchInvalid;
-        private nextLine;
+        private matchMode();
+        private match(code, match);
+        private matchInvalid();
+        private nextLine();
         private readonly lineIsEol;
         private readonly rowIsEol;
-        private llegalTermination;
+        private llegalTermination();
     }
     interface Tokenizer {
         on(name: 'error', fn: (error: Error | string, pos?: {
@@ -219,25 +219,31 @@ declare namespace Ve.Lang.Razor {
         constructor(options?: {
             writeVariable: string;
         });
-        private writeCode;
-        private writeValue;
-        private writeString;
-        private writeScope;
+        private writeCode(text);
+        private writeValue(text);
+        private writeString(text);
+        private writeScope(code);
         scope: 'code' | 'text';
         write(token: Token): void;
-        private read;
+        private read(token);
         outputCode(): string;
     }
 }
 declare namespace Ve.Lang.Razor {
     class RazorTemplate {
         static escape(code: string): string;
-        static compile(code: string, obj: Record<string, any>, ViewBag?: Record<string, any>): any;
+        private baseObject;
+        compile(code: string, obj: Record<string, any>, ViewBag?: Record<string, any>): any;
         /***
          * 提取对象的所有property name,包括继承的
          */
-        private static getObjectKeyValues;
+        private getObjectKeyValues(data);
+        private static $rt;
+        static compile(code: string, obj: Record<string, any>, ViewBag?: Record<string, any>): any;
     }
+}
+interface Window {
+    RJS: Ve.Lang.Razor.RazorTemplate;
 }
 declare namespace Ve.Lang {
     /**

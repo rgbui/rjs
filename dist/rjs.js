@@ -800,86 +800,7 @@ var Ve;
                 return json;
             }
             get flag() {
-                var cmap = {
-                    '《=': "<=",
-                    '》=': ">=",
-                    '！=': "!=",
-                    '-》': "->",
-                    '、': "/",
-                    '！': "!",
-                    "？": "?",
-                    "：": ":",
-                    "、=": "/=",
-                    "。。。": "...",
-                    "？？": "??",
-                    "？。": "?.",
-                    "。。": "..",
-                    "《": "<",
-                    "》": ">",
-                    "（": "(",
-                    "【": "]",
-                    "）": ")",
-                    "】": "]",
-                    "，": ",",
-                    "；": ";",
-                    "。": ".",
-                };
-                var self = this;
-                var gv = () => {
-                    if (typeof cmap[self.value] == 'string')
-                        return cmap[self.value];
-                    return self.value;
-                };
-                if (this.name == 'operators') {
-                    return gv();
-                }
-                else if (this.name == 'keywords') {
-                    if (['any', 'Any', 'bool', 'Bool', 'number', 'Number', 'string', 'String', 'double', 'Double', 'Int', 'int',
-                        'Object', 'Array', 'Date'].find(x => x == this.value) ? true : false)
-                        return 'type';
-                    return gv();
-                }
-                else if (this.name == 'delimiter') {
-                    return gv();
-                }
-                else if (this.name.startsWith('comment')) {
-                    return 'comment';
-                }
-                else if (this.name.startsWith('string')) {
-                    if (this.name == 'string.single.open' || this.name == 'string.double.open')
-                        return '"';
-                    else if (this.name == 'string.single.close' || this.name == 'string.double.close')
-                        return '\'';
-                    else if (this.name == 'string.escape')
-                        return 'escape';
-                    else if (this.name == 'string.variable')
-                        return 'variable';
-                    else if (this.name == 'string.template.open')
-                        return '@{';
-                    else if (this.name == 'string.template.close')
-                        return '}';
-                    return 'string';
-                }
-                else if (this.name.startsWith('number')) {
-                    return 'number';
-                }
-                else if (this.name.startsWith('white')) {
-                    return 'space';
-                }
-                else if (this.name == 'line') {
-                    return 'line';
-                }
-                else if (this.name == 'bracket.open' || this.name == 'bracket.close') {
-                    return gv();
-                }
-                else if (this.name.startsWith('generic')) {
-                    if (this.name == 'generic.type')
-                        return 'word';
-                    else
-                        return gv();
-                }
-                else if (this.name == 'word')
-                    return this.name;
+                return '';
             }
             get index() {
                 if (this.parent) {
@@ -976,7 +897,7 @@ var Ve;
                     if (mode.nextTurn && mode.nextTurn.startsWith('@')) {
                         this.contextMode = this.syntax[mode.nextTurn.replace('@', '')];
                         if (!this.contextMode) {
-                            this.emit('error', new Error(`没有找到转向处理"${mode.nextTurn}"`), { col: token.pos, row: token.row }, token);
+                            this.emit('error', new Error(`not found nextTurn "${mode.nextTurn}"`), { col: token.pos, row: token.row }, token);
                         }
                         else {
                             this.matchMode();
@@ -987,7 +908,7 @@ var Ve;
                         if (this.contextToken.parent)
                             this.contextToken = this.contextToken.parent;
                         else {
-                            this.emit('error', new Error(`没有找到字符"${token.value}"的启始字符`), { col: token.pos, row: token.row }, token);
+                            this.emit('error', new Error(`not found "${token.value}" starting character`), { col: token.pos, row: token.row }, token);
                         }
                     }
                 };
@@ -1179,7 +1100,7 @@ var Ve;
                         push: true,
                         next: '@root',
                         action(contextToken) {
-                            if (!['if', 'elseif'].includes(contextToken.name))
+                            if (!(['if', 'elseif'].findIndex(x => x == contextToken.name) > -1))
                                 return {
                                     nextTurn: '@root'
                                 };
@@ -1426,7 +1347,7 @@ var Ve;
         })(Razor = Lang.Razor || (Lang.Razor = {}));
     })(Lang = Ve.Lang || (Ve.Lang = {}));
 })(Ve || (Ve = {}));
-//<reference path='syntax.ts'/>
+///<reference path='syntax.ts'/>
 ///<reference path='writer.ts'/>
 var Ve;
 (function (Ve) {
@@ -1435,10 +1356,13 @@ var Ve;
         var Razor;
         (function (Razor) {
             class RazorTemplate {
+                constructor() {
+                    this.baseObject = {};
+                }
                 static escape(code) {
                     return code.replace(/@(?![@])/g, "@@");
                 }
-                static compile(code, obj, ViewBag) {
+                compile(code, obj, ViewBag) {
                     if (typeof ViewBag == 'undefined')
                         ViewBag = {};
                     var tokenizer = new Razor.RazorTokenizer();
@@ -1451,8 +1375,7 @@ var Ve;
                      * 如@include('~/views/index.rjs')
                      *
                      */
-                    var baseObj = {};
-                    var baseMaps = this.getObjectKeyValues(baseObj);
+                    var baseMaps = this.getObjectKeyValues(this.baseObject);
                     var maps = this.getObjectKeyValues(obj);
                     maps = [...maps, ...baseMaps];
                     var funCode = `function(ViewBag,...args)
@@ -1464,7 +1387,7 @@ var Ve;
                  return innerFun.apply(this,args);
             }`;
                     try {
-                        var gl = typeof window == 'undefined' ? global : window;
+                        var gl = typeof window == 'undefined' ? globalThis : window;
                         var fun = gl.eval(`(${funCode})`);
                         return fun.apply(obj, [ViewBag, ...maps.map(x => x.value)]);
                     }
@@ -1476,7 +1399,7 @@ var Ve;
                 /***
                  * 提取对象的所有property name,包括继承的
                  */
-                static getObjectKeyValues(data) {
+                getObjectKeyValues(data) {
                     var prototypes = [];
                     var current = data.__proto__;
                     while (true) {
@@ -1517,11 +1440,25 @@ var Ve;
                     });
                     return maps;
                 }
+                static compile(code, obj, ViewBag) {
+                    if (typeof this.$rt == 'undefined') {
+                        this.$rt = new RazorTemplate();
+                    }
+                    return this.$rt.compile(code, obj, ViewBag);
+                }
             }
             Razor.RazorTemplate = RazorTemplate;
         })(Razor = Lang.Razor || (Lang.Razor = {}));
     })(Lang = Ve.Lang || (Ve.Lang = {}));
 })(Ve || (Ve = {}));
+///<reference path='token/tokenizer.ts' />
+///<reference path='razor/template.ts'/>
+if (typeof module != 'undefined' && module.exports) {
+    module.exports = Ve.Lang.Razor.RazorTemplate;
+}
+if (typeof window != 'undefined') {
+    window.RJS = Ve.Lang.Razor.RazorTemplate;
+}
 ///<reference path='token.ts'/>
 var Ve;
 (function (Ve) {
