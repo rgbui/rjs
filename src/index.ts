@@ -5,9 +5,6 @@
 if (typeof module != 'undefined' && module.exports) {
     module.exports = Ve.Lang.Razor.RazorTemplate;
 }
-interface Window {
-    RJS: Ve.Lang.Razor.RazorTemplate
-}
 if (typeof window != 'undefined') {
-    window.RJS = Ve.Lang.Razor.RazorTemplate;
+    (window as any).rjs=(window as any).RJS = Ve.Lang.Razor.RazorTemplate;
 }
