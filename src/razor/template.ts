@@ -7,7 +7,8 @@ namespace Ve.Lang.Razor {
         static escape(code: string) {
             return code.replace(/@(?![@])/g, "@@");
         }
-        static compile(code: string, obj: Record<string, any>, ViewBag?: Record<string, any>) {
+        private baseObject: Record<string, any> = {};
+        compile(code: string, obj: Record<string, any>, ViewBag?: Record<string, any>) {
             if (typeof ViewBag == 'undefined') ViewBag = {};
             var tokenizer = new RazorTokenizer();
             var token = tokenizer.parse(code);
@@ -19,10 +20,7 @@ namespace Ve.Lang.Razor {
              * 如@include('~/views/index.rjs')
              * 
              */
-            var baseObj = {
-
-            };
-            var baseMaps = this.getObjectKeyValues(baseObj);
+            var baseMaps = this.getObjectKeyValues(this.baseObject);
             var maps = this.getObjectKeyValues(obj);
             maps = [...maps, ...baseMaps];
             var funCode = `function(ViewBag,...args)
@@ -46,7 +44,7 @@ namespace Ve.Lang.Razor {
         /***
          * 提取对象的所有property name,包括继承的
          */
-        private static getObjectKeyValues(data) {
+        private getObjectKeyValues(data) {
             var prototypes: any[] = [];
             var current = data.__proto__;
             while (true) {
@@ -82,6 +80,13 @@ namespace Ve.Lang.Razor {
                 })(key);
             })
             return maps;
+        }
+        private static $rt: RazorTemplate;
+        static compile(code: string, obj: Record<string, any>, ViewBag?: Record<string, any>) {
+            if (typeof this.$rt == 'undefined') {
+                this.$rt = new RazorTemplate();
+            }
+            return this.$rt.compile(code, obj, ViewBag);
         }
     }
 
