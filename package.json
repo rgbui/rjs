@@ -1,6 +1,6 @@
 {
   "name": "rarzor-js-template",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Graceful JavaScript templates",
   "main": "index.js",
   "scripts": {

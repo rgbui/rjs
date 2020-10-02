@@ -29,13 +29,13 @@ var html = rjs.compile(`<ul>
         <li><span>@users[i].name</span></li>
     } 
 </ul>`,{ 
-   users:["Donald John Trump","Obama","George Walker Bush"]
+   users:[{name:"Donald John Trump"},{name:"Obama"},{name:"George Walker Bush"}]
 });
 
 ```
 nodejs
 ```
-var RJS=require('rarzor-js-template')
+var RJS=require('rarzor-js-template');
 var rjs=new RJS({
     include(filePath,data)=>{
         var template=require("fs").readFileSync(path.join(__dirname,filePath+".rjs"),"utf8");
