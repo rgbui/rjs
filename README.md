@@ -6,8 +6,8 @@ Do you feel comfortable? Like this
     <h2>@user.name</h2>
 }
 ```
-is it more graceful than EJS?  
-I just don't like EJS, that's why I designed RJS  
+is it more graceful than ejs?  
+I just don't like ejs, that's why I designed rjs  
 I think you'll like it.   
 # Installation
 
@@ -55,8 +55,9 @@ var html=rjs.compile(`<ul>
     ]
 });
 ```
-You can customize the @include() statement   
-You can customize the @html() for HTML escape    
+You can
+define @include() statement   
+define @html() for HTML escape    
 You can do more    
 It's very easy   
 
